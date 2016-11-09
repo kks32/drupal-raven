@@ -91,7 +91,7 @@ function raven_settings_form($form, &$form_state) {
 
   $form['raven_login_manual_crsid'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Enable Raven manual list requirement'),
+    '#title' => t('Enable only manually authorised list of CRSids'),
     '#default_value' => variable_get('raven_login_manual_crsid', FALSE),
     '#description' => t('Users who are on the manually authorised list can only log in.'),
   );

@@ -261,12 +261,15 @@ function raven_auth() {
       drupal_goto(variable_get('raven_login_fail_redirect'));
     }
 
-    if (!is_manually_authorised_crsid($r_principal)) {
-      drupal_set_message(t('User not a King\'s member access denied and logged.'), 'error');
-      watchdog('raven', 'User not a King\'s member. validation failed: expecting \'@raven_id\' to be in the King\'s manual user list.', array(
-        '@raven_id' => $r_principal,
-      ), WATCHDOG_ALERT);
-      drupal_goto(variable_get('raven_login_fail_redirect'));
+    // Only allow manually authorised members 
+    if (variable_get('raven_login_manual_crsid', TRUE)) {
+      if (!is_manually_authorised_crsid($r_principal)) {
+        drupal_set_message(t('User not a King\'s member access denied and logged.'), 'error');
+        watchdog('raven', 'User not a King\'s member. validation failed: expecting \'@raven_id\' to be in the King\'s manual user list.', array(
+          '@raven_id' => $r_principal,
+        ), WATCHDOG_ALERT);
+        drupal_goto(variable_get('raven_login_fail_redirect'));
+      }
     }
 
     // Successful login
