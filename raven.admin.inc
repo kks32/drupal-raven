@@ -89,6 +89,16 @@ function raven_settings_form($form, &$form_state) {
     '#required' => FALSE,
   );
 
+  // Textarea for entering a list of manually authorised crsid
+  // Original implementation by Alex Ridge
+  $form['ucamraven_manual_auth_override'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Manually Authorised crsids'),
+    '#default_value' => variable_get('ucamraven_manual_auth_override', ''),
+    '#description' => t('Add a list of additional manually authorised crsids to be allowed to log in - one crsid per line, no commas. Useful for when lookup institution matching isn\'t flexible enough.)'),
+    '#rows' => 15
+  );
+
   $form['#validate'][] = 'raven_settings_validate';
 
   return system_settings_form($form);

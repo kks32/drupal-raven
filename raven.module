@@ -200,7 +200,7 @@ function raven_auth() {
   }
 
   array_unshift($parts, $r_ver);
-
+  
   if (($r_status === '200') && (raven_signature_check(implode('!', $parts), $r_sig) === TRUE)) {
     // Timeout check
     if ((time() - strtotime($r_issue)) > 30) {
@@ -208,6 +208,7 @@ function raven_auth() {
       watchdog('raven', 'Timeout on login attempt for @raven_id', array('@raven_id' => $r_principal), WATCHDOG_WARNING);
       drupal_goto(variable_get('raven_login_fail_redirect'));
     }
+    
 
     // 'kid' check
     if ($r_kid !== get_raven_kid()) {
@@ -257,6 +258,14 @@ function raven_auth() {
     if (isset($r_ptags) && $r_ptags !== 'current' && variable_get('raven_allow_raven_for_life', FALSE) != TRUE) {
       drupal_set_message(t('Raven for Life accounts are not allowed to access the site.'), 'error');
       watchdog('raven', 'Raven for Life account @raven_id denied access.', array('@raven_id' => $r_principal), WATCHDOG_INFO);
+      drupal_goto(variable_get('raven_login_fail_redirect'));
+    }
+
+    if (!is_manually_authorised_crsid($r_principal)) {
+      drupal_set_message(t('User not a King\'s memeber access denied and logged.'), 'error');
+      watchdog('raven', 'User not a King\'s memeber. validation failed: expecting \'@raven_id\' to be in the King\'s manual user list.', array(
+        '@raven_id' => $r_principal,
+      ), WATCHDOG_ALERT);
       drupal_goto(variable_get('raven_login_fail_redirect'));
     }
 
@@ -502,6 +511,17 @@ function is_raven_user(StdClass $account) {
 }
 
 /**
+ * Is this a manually authenticated raven user?
+ * Original implementation by Alex Ridge
+ **/
+function is_manually_authorised_crsid($crsid){
+  //get the list of authorised crsids and split by \r\n or \r or \n (so to satisfy all operating systems)
+  $manual_auth_list = preg_split( '/\r\n|\r|\n/', variable_get('ucamraven_manual_auth_override', ''));
+  //check if the crsid is in the list
+  return ((array_search($crsid, $manual_auth_list) !== false) ? true : false);
+}
+
+/**
  * Logs in or register the user following Raven authentication.
  *
  * The global $user object is populated and login tasks are performed.
@@ -514,6 +534,7 @@ function is_raven_user(StdClass $account) {
  * @see hook_raven_login_alter()
  */
 function user_raven_login_register($name) {
+ 
   $edit = array();
   $account = user_external_load($name);
 
