@@ -200,7 +200,7 @@ function raven_auth() {
   }
 
   array_unshift($parts, $r_ver);
-  
+
   if (($r_status === '200') && (raven_signature_check(implode('!', $parts), $r_sig) === TRUE)) {
     // Timeout check
     if ((time() - strtotime($r_issue)) > 30) {
@@ -208,7 +208,7 @@ function raven_auth() {
       watchdog('raven', 'Timeout on login attempt for @raven_id', array('@raven_id' => $r_principal), WATCHDOG_WARNING);
       drupal_goto(variable_get('raven_login_fail_redirect'));
     }
-    
+
 
     // 'kid' check
     if ($r_kid !== get_raven_kid()) {
@@ -262,8 +262,8 @@ function raven_auth() {
     }
 
     if (!is_manually_authorised_crsid($r_principal)) {
-      drupal_set_message(t('User not a King\'s memeber access denied and logged.'), 'error');
-      watchdog('raven', 'User not a King\'s memeber. validation failed: expecting \'@raven_id\' to be in the King\'s manual user list.', array(
+      drupal_set_message(t('User not a King\'s member access denied and logged.'), 'error');
+      watchdog('raven', 'User not a King\'s member. validation failed: expecting \'@raven_id\' to be in the King\'s manual user list.', array(
         '@raven_id' => $r_principal,
       ), WATCHDOG_ALERT);
       drupal_goto(variable_get('raven_login_fail_redirect'));
@@ -534,7 +534,7 @@ function is_manually_authorised_crsid($crsid){
  * @see hook_raven_login_alter()
  */
 function user_raven_login_register($name) {
- 
+
   $edit = array();
   $account = user_external_load($name);
 

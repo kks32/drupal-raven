@@ -89,6 +89,13 @@ function raven_settings_form($form, &$form_state) {
     '#required' => FALSE,
   );
 
+  $form['raven_login_manual_crsid'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable Raven manual list requirement'),
+    '#default_value' => variable_get('raven_login_manual_crsid', FALSE),
+    '#description' => t('Users who are on the manually authorised list can only log in.'),
+  );
+
   // Textarea for entering a list of manually authorised crsid
   // Original implementation by Alex Ridge
   $form['ucamraven_manual_auth_override'] = array(
